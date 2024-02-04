@@ -1,7 +1,4 @@
 use fmt;
-use net::udp;
-use net::ip;
-use strings;
 
 fn fib(n: int) int = {
     if (n < 2) {
