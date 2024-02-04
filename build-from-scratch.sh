@@ -10,11 +10,16 @@
 #   - build directories are not deleted
 # 
 
+set -e
+
 CLONE=0
 BUILD_QBE=1
 BUILD_SCDOC=1
 BUILD_HAREC=1
 BUILD_HARE=1
+PLATFORM=linux
+
+CWD=$(pwd)
 
 if [ $CLONE = 1 ]; then
 	git clone git://c9x.me/qbe.git
@@ -25,45 +30,57 @@ if [ $CLONE = 1 ]; then
 
 if [ $BUILD_QBE = 1 ]; then
 	NAME=qbe
+
+	echo "*** Building $NAME"
 	rm -rf build-$NAME
 	cp -pr qbe build-$NAME
 	cd build-$NAME
 
 	make PREFIX=/usr/local
 	make PREFIX=/usr/local install
+
+	cd $CWD
 fi
 
 if [ $BUILD_SCDOC = 1 ]; then
 	NAME=scdoc
+
+	echo "*** Building $NAME"
 	rm -rf build-$NAME
 	cp -pr scdoc build-$NAME
 	cd build-$NAME
 
 	make PREFIX=/usr/local
 	make PREFIX=/usr/local install
+
+	cd $CWD
 fi
 
 if [ $BUILD_HAREC = 1 ]; then
 	NAME=harec
+
+	echo "*** Building $NAME"
 	rm -rf build-$NAME
 	cp -pr harec build-$NAME
 	cd build-$NAME
 
-	mkdir build
-	cd build
-	../configure --prefix=/usr/local
+	cp configs/$PLATFORM.mk config.mk
 	make PREFIX=/usr/local
 	make check
 	make PREFIX=/usr/local install
+
+	cd $CWD
 fi
 
 if [ $BUILD_HARE = 1 ]; then
 	NAME=hare
+
+	echo "*** Building $NAME"
 	rm -rf build-$NAME
 	cp -pr hare build-$NAME
 	cd build-$NAME
 
-	cp config.example.mk config.mk
+	cp configs/$PLATFORM.mk config.mk
 	# - if you want a cross-compile capable toolchain do the following
 	# - install cross binutils (e.g. for debian binutils-aarch64-linux-gnu)
 	# - in config.mk set proper values
@@ -72,4 +89,8 @@ if [ $BUILD_HARE = 1 ]; then
 	#   AARCH64_LD=aarch64-linux-gnu-ld
 	make
 	make install
+
+	cd $CWD
 fi
+
+echo "*** Done ***"
